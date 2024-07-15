@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ProductsService } from '../services/products.service';
 import { Product, Products } from '../types';
 import { ProductComponent } from '../component/product/product.component';
-import { PaginatorModule } from 'primeng/paginator';
+import { Paginator, PaginatorModule } from 'primeng/paginator';
 import { EditPopupComponent } from '../component/edit-popup/edit-popup.component';
 import { ButtonModule } from 'primeng/button';
 
@@ -34,6 +34,8 @@ export class HomeComponent implements OnInit {
     rating: 0,
   };
 
+  @ViewChild('paginator') paginator: Paginator | undefined;
+
   constructor(private productService: ProductsService) {}
   ngOnInit(): void {
     this.fetchProducts(0, this.rows);
@@ -44,7 +46,13 @@ export class HomeComponent implements OnInit {
     this.displayEditPopup = !this.displayEditPopup;
   }
 
-  public toggleDeletePopup(product: Product) {}
+  public toggleDeletePopup(product: Product) {
+    if (!product.id) {
+      return;
+    }
+
+    this.deleteProduct(product.id);
+  }
 
   public onProductOutput(product: Product) {
     console.log(product);
@@ -52,6 +60,10 @@ export class HomeComponent implements OnInit {
 
   public toggleAddPopup() {
     this.displayAddPopup = true;
+  }
+
+  public resetPaginator() {
+    this.paginator?.changePage(0);
   }
 
   public fetchProducts(page: number, perPage: number) {
@@ -97,6 +109,7 @@ export class HomeComponent implements OnInit {
         next: (data) => {
           console.log(data);
           this.fetchProducts(0, this.rows);
+          this.resetPaginator();
         },
         error: (error) => {
           console.log(error);
@@ -111,6 +124,7 @@ export class HomeComponent implements OnInit {
         next: (data) => {
           console.log(data);
           this.fetchProducts(0, this.rows);
+          this.resetPaginator();
         },
         error: (error) => {
           console.log(error);
@@ -124,6 +138,7 @@ export class HomeComponent implements OnInit {
         next: (data) => {
           console.log(data);
           this.fetchProducts(0, this.rows);
+          this.resetPaginator();
         },
         error: (error) => {
           console.log(error);
